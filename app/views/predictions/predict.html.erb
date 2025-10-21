@@ -1,0 +1,94 @@
+<div style="background: yellow; padding: 10px;">
+  <p>DEBUG - @resultat présent ? <%= @resultat.present? %></p>
+  <p>DEBUG - @resultat valeur : <%= @resultat.inspect %></p>
+  <p>DEBUG - params : <%= params.inspect %></p>
+</div>
+
+<h1>💡 Estimation du prix d'une maison</h1>
+
+<%= form_with url: predict_path, method: :post, data: { turbo: false } do |form| %>
+  <div>
+    <%= form.label :taille, "Taille de la maison (m²) :" %>
+    <%= form.number_field :taille, step: 1, required: true %>
+  </div>
+  <div style="margin-top: 10px;">
+    <%= form.submit "Prédire le prix" %>
+  </div>
+<% end %>
+
+<% if @resultat.present? && @resultat.include?("⚠️") %>
+  <div style="color: red; margin-top: 10px;"><%= @resultat %></div>
+<% elsif @resultat.present? %>
+  <h2 style="color: green; margin-top: 20px;"><%= @resultat %></h2>
+<% end %>
+
+<hr>
+
+<%= form_with model: TrainingDatum.new, url: training_data_path, method: :post do |f| %>
+  <div>
+    <%= f.label :taille, "Taille (m²)" %>
+    <%= f.number_field :taille, step: 1, required: true %>
+  </div>
+  <div>
+    <%= f.label :prix, "Prix réel (€)" %>
+    <%= f.number_field :prix, step: 1000, required: true %>
+  </div>
+  <div style="margin-top: 10px;">
+    <%= f.submit "Ajouter cette donnée" %>
+  </div>
+<% end %>
+<hr>
+<hr>
+
+<h3>📊 Données d'entraînement actuelles</h3>
+
+<% if @training_data.any? %>
+  <table border="1" cellspacing="0" cellpadding="6" style="margin-top:10px; border-collapse: collapse;">
+    <thead style="background-color: #f0f0f0;">
+      <tr>
+        <th>Taille (m²)</th>
+        <th>Prix (€)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @training_data.each do |d| %>
+        <tr>
+          <td><%= d.taille %></td>
+          <td><%= number_with_delimiter(d.prix.to_i, delimiter: " ") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p style="color: #666;">Aucune donnée enregistrée pour le moment.</p>
+<% end %>
+
+
+
+<h3>📊 Graphiques</h3>
+<pre><%= @graph_data.inspect %></pre>
+<%= line_chart @graph_data, xtitle: "Taille (m²)", ytitle: "Prix (€)", points: true, colors: ["#4CAF50"] %>
+<% puts @graph_data %>
+
+<h3>📊 Données d’entraînement + Prédiction</h3>
+
+<%= line_chart [
+      { name: "Données réelles", data: @graph_data, points: true, color: "#4CAF50" },
+      { name: "Prédiction IA", data: @prediction_point, points: true, color: "#E53935" }
+    ],
+    xtitle: "Taille (m²)",
+    ytitle: "Prix (€)",
+    library: {
+      elements: { point: { radius: 6 } },
+      plugins: {
+        legend: { display: true },
+        tooltip: { enabled: true }
+      }
+    }
+%>
+
+
+
+
+
+
