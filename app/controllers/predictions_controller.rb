@@ -2,47 +2,45 @@ class PredictionsController < ApplicationController
   require 'rumale'
 
   def index
-    @training_data = TrainingDatum.all
+    redirect_to action: :predict
   end
 
   def predict
-  if params[:taille].blank?
-    @resultat = "⚠️ Veuillez entrer une taille avant de prédire."
+    # Récupère toutes les données d'entraînement
     @training_data = TrainingDatum.all
+
+    # Prépare les données pour le graphe
     @graph_data = @training_data.map { |d| [d.taille, d.prix] }.to_h
-    return render :predict
+    @graph_data = {50 => 100_000, 60 => 120_000, 70 => 150_000} if @graph_data.empty?
+
+    # Si aucune taille saisie → on affiche la vue sans calculer
+    if params[:taille].blank?
+      @resultat = "⚠️ Veuillez entrer une taille avant de prédire."
+      return render :predict
+    end
+
+    # Taille saisie
+    @taille = params[:taille].to_f
+
+    # Données d’entraînement pour le modèle
+    if @training_data.empty?
+      x = Numo::DFloat[[50]]
+      y = Numo::DFloat[341_000]
+    else
+      x = Numo::DFloat[*@training_data.map { |d| [d.taille] }]
+      y = Numo::DFloat[*@training_data.map(&:prix)]
+    end
+
+    # Entraînement du modèle de régression
+    model = Rumale::LinearModel::LinearRegression.new
+    model.fit(x, y)
+
+    # Prédiction
+    @prix_prevu = model.predict(Numo::DFloat[[ @taille ]])[0]
+    @resultat = "Prix estimé : #{@prix_prevu.round(2)} €"
+    puts "DEBUG >> @taille = #{@taille}, @prix_prevu = #{@prix_prevu}"
+
+    render :predict
   end
-
-  taille = params[:taille].to_f
-
-  # Charger les données d'entraînement depuis la base
-  training_data = TrainingDatum.all
-  if training_data.empty?
-    x = Numo::DFloat[[50],[55],[60],[65],[70],[75],[80],[85],[90],[95],[100]]
-    y = Numo::DFloat[100_000,110_000,120_000,130_000,140_000,150_000,158_000,150_000,180_000,185_000,192_000]
-  else
-    x = Numo::DFloat[*training_data.map { |d| [d.taille] }]
-    y = Numo::DFloat[*training_data.map(&:prix)]
-  end
-
-  # Entraînement du modèle
-  model = Rumale::LinearModel::LinearRegression.new
-  model.fit(x, y)
-
-  # Prédiction
-  nouvelle_donnee = Numo::DFloat[[taille]]
-  prix_prevu = model.predict(nouvelle_donnee)[0]
-
-  @resultat = "Prix estimé : #{prix_prevu.round(2)} €"
-  @training_data = training_data
-
-  # 🟩 Construire les données pour le graphe
-  @graph_data = @training_data.map { |d| [d.taille, d.prix] }.to_h
-  @graph_data = {50 => 100000, 60 => 120000, 70 => 150000} if @graph_data.empty?
-
-  render :predict
-end
-
-
 end
 

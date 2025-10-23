@@ -1,7 +1,7 @@
-<div style="background: yellow; padding: 10px;">
-  <p>DEBUG - @resultat présent ? <%= @resultat.present? %></p>
-  <p>DEBUG - @resultat valeur : <%= @resultat.inspect %></p>
-  <p>DEBUG - params : <%= params.inspect %></p>
+<div style="background: #fff8b3; padding: 10px; margin-bottom: 10px;">
+  <p><b>DEBUG</b> - @resultat présent ? <%= @resultat.present? %></p>
+  <p>@resultat : <%= @resultat.inspect %></p>
+  <p>params : <%= params.inspect %></p>
 </div>
 
 <h1>💡 Estimation du prix d'une maison</h1>
@@ -16,14 +16,17 @@
   </div>
 <% end %>
 
-<% if @resultat.present? && @resultat.include?("⚠️") %>
-  <div style="color: red; margin-top: 10px;"><%= @resultat %></div>
-<% elsif @resultat.present? %>
-  <h2 style="color: green; margin-top: 20px;"><%= @resultat %></h2>
+<% if @resultat.present? %>
+  <% if @resultat.include?("⚠️") %>
+    <div style="color: red; margin-top: 10px;"><%= @resultat %></div>
+  <% else %>
+    <h2 style="color: green; margin-top: 20px;"><%= @resultat %></h2>
+  <% end %>
 <% end %>
 
 <hr>
 
+<h3>📈 Ajouter une donnée réelle</h3>
 <%= form_with model: TrainingDatum.new, url: training_data_path, method: :post do |f| %>
   <div>
     <%= f.label :taille, "Taille (m²)" %>
@@ -37,11 +40,10 @@
     <%= f.submit "Ajouter cette donnée" %>
   </div>
 <% end %>
-<hr>
+
 <hr>
 
 <h3>📊 Données d'entraînement actuelles</h3>
-
 <% if @training_data.any? %>
   <table border="1" cellspacing="0" cellpadding="6" style="margin-top:10px; border-collapse: collapse;">
     <thead style="background-color: #f0f0f0;">
@@ -63,29 +65,49 @@
   <p style="color: #666;">Aucune donnée enregistrée pour le moment.</p>
 <% end %>
 
-
-
-<h3>📊 Graphiques</h3>
+<hr>
 <pre><%= @graph_data.inspect %></pre>
-<%= line_chart @graph_data, xtitle: "Taille (m²)", ytitle: "Prix (€)", points: true, colors: ["#4CAF50"] %>
-<% puts @graph_data %>
 
-<h3>📊 Données d’entraînement + Prédiction</h3>
+<hr>
 
-<%= line_chart [
-      { name: "Données réelles", data: @graph_data, points: true, color: "#4CAF50" },
-      { name: "Prédiction IA", data: @prediction_point, points: true, color: "#E53935" }
-    ],
-    xtitle: "Taille (m²)",
-    ytitle: "Prix (€)",
-    library: {
-      elements: { point: { radius: 6 } },
-      plugins: {
-        legend: { display: true },
-        tooltip: { enabled: true }
-      }
-    }
-%>
+<h3>📉 Graphique : Données d’entraînement + Prédiction</h3>
+
+<pre>
+DEBUG - @taille: <%= @taille.inspect %>
+DEBUG - @prix_prevu: <%= @prix_prevu.inspect %>
+</pre>
+
+<% if @graph_data.present? %>
+  <%= line_chart [
+        { name: "Données réelles", data: @graph_data, color: "#4CAF50" },
+        # 🔴 Afficher le point de prédiction s’il existe
+        (@taille && @prix_prevu) ? { 
+          name: "Prédiction", 
+          data: { @taille => @prix_prevu },
+          color: "#FF0000",
+          points: true
+        } : nil
+      ].compact,
+      xtitle: "Taille (m²)",
+      ytitle: "Prix (€)"
+  %>
+<% end %>
+
+<% if @prix_prevu %>
+  <p style="margin-top: 15px; font-size: 18px;">
+    💰 <b>Prix prédit :</b>
+    <%= number_with_delimiter(@prix_prevu.round(0).to_i, delimiter: " ") %> €
+    pour une maison de <%= @taille.to_i %> m²
+  </p>
+<% else %>
+  <p style="color: #888;">(Aucune prédiction encore calculée)</p>
+<% end %>
+
+
+
+
+
+
 
 
 

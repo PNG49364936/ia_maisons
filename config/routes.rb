@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
-  root "predictions#predict"
-  post "/predict", to: "predictions#predict"
+  root "predictions#predict"  # page principale
 
-  # Route REST standard pour créer des données d'entraînement
+  post "/predict", to: "predictions#predict"
+  get  "/predict", to: "predictions#predict"
+
   resources :training_data, only: [:create]
 end
+
