@@ -5,3 +5,5 @@ import "@hotwired/turbo-rails"  // si tu utilises Turbo
 import "chartkick"
 import "chart.js"
 
+//= require popper
+//= require bootstrap

@@ -8,6 +8,9 @@ gem "rails", "~> 7.1.3"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
+
+
+
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", "~> 1.4"
 
@@ -48,6 +51,12 @@ gem 'rumale'
 
 gem 'chartkick'
 gem 'groupdate'  # utile pour regrouper les données si besoin
+gem "chart-js-rails"
+
+#ajout
+gem "sassc-rails"    # permet d'utiliser du SCSS avec le pipeline
+gem "bootstrap", "~> 5.3"  # gem officielle bootstrap-rubygem
+
 
 
 group :development, :test do
