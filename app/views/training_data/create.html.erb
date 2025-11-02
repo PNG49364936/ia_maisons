@@ -16,3 +16,27 @@
   </div>
 <% end %><h1>TrainingData#create</h1>
 <p>Find me in app/views/training_data/create.html.erb</p>
+
+<hr>
+<h3>📊 Données d'entraînement actuelles</h3>
+<% if @training_data.any? %>
+  <table border="1" cellspacing="0" cellpadding="6" style="margin-top:10px; border-collapse: collapse;">
+    <thead style="background-color: #f0f0f0;">
+      <tr>
+        <th>Taille (m²)</th>
+        <th>Prix (€)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @training_data.each do |d| %>
+        <tr>
+          <td><%= d.taille %></td>
+          <td><%= number_with_delimiter(d.prix.to_i, delimiter: " ") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p style="color: #666;">Aucune donnée enregistrée pour le moment.</p>
+<% end %>
+

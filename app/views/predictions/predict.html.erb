@@ -26,44 +26,11 @@
 
 <hr>
 
-<h3>📈 Ajouter une donnée réelle</h3>
-<%= form_with model: TrainingDatum.new, url: training_data_path, method: :post do |f| %>
-  <div>
-    <%= f.label :taille, "Taille (m²)" %>
-    <%= f.number_field :taille, step: 1, required: true %>
-  </div>
-  <div>
-    <%= f.label :prix, "Prix réel (€)" %>
-    <%= f.number_field :prix, step: 1000, required: true %>
-  </div>
-  <div style="margin-top: 10px;">
-    <%= f.submit "Ajouter cette donnée" %>
-  </div>
-<% end %>
+
 
 <hr>
 
-<h3>📊 Données d'entraînement actuelles</h3>
-<% if @training_data.any? %>
-  <table border="1" cellspacing="0" cellpadding="6" style="margin-top:10px; border-collapse: collapse;">
-    <thead style="background-color: #f0f0f0;">
-      <tr>
-        <th>Taille (m²)</th>
-        <th>Prix (€)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @training_data.each do |d| %>
-        <tr>
-          <td><%= d.taille %></td>
-          <td><%= number_with_delimiter(d.prix.to_i, delimiter: " ") %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p style="color: #666;">Aucune donnée enregistrée pour le moment.</p>
-<% end %>
+
 
 <hr>
 <pre><%= @graph_data.inspect %></pre>

@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
-  root "predictions#predict"  # page principale
+  #root "predictions#predict"  # page principale
 
   post "/predict", to: "predictions#predict"
   get  "/predict", to: "predictions#predict"
   get "home", to: "pages#home"
+    root to: 'pages#home'
 
 
 
