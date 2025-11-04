@@ -6,7 +6,8 @@
 
 <h1>💡 Estimation du prix d'une maison</h1>
 
-<%= form_with url: predict_path, method: :post, data: { turbo: false } do |form| %>
+<%= form_with url: training_data_path, method: :post do |f| %>
+
   <div>
     <%= form.label :taille, "Taille de la maison (m²) :" %>
     <%= form.number_field :taille, step: 1, required: true %>

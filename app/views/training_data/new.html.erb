@@ -1,0 +1,64 @@
+    <div class="data">   
+        <h3>📈 Ajouter une donnée réelle :</h3>
+        <p>Entrez une taille et le prix réel observé pour améliorer le modèle :</p>
+
+        <%= form_with url: training_data_path, method: :post do |f| %>
+
+
+        <div>
+            <%= f.label :taille, "Taille (m²)" %>
+            <%= f.number_field :taille, step: 1, required: true %>
+        </div>
+        <div>
+            <%= f.label :prix, "Prix réel (€)" %>
+            <%= f.number_field :prix, step: 1000, required: true %>
+        </div>
+        <div style="margin-top: 10px;">
+            <%= f.submit "Ajouter cette donnée" %>
+        </div>
+        <% end %>
+        <hr>
+        <hr>
+        <h3>📊 Données d'entraînement actuelles</h3>
+        <% if @training_data.any? %>
+        <table cellspacing="0" cellpadding="6" style="margin-top:10px; border-collapse: collapse; border: 2px solid black;">
+        <thead style="background-color: #f0f0f0;">
+            <tr>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black;">Taille (m²)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black; background-color: #f8f8f8;">Prix (€)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black;">Taille (m²)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black; background-color: #f8f8f8;">Prix (€)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black;">Taille (m²)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black; background-color: #f8f8f8;">Prix (€)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black;">Taille (m²)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black; background-color: #f8f8f8;">Prix (€)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black;">Taille (m²)</th>
+            <th style="border-right: 2px solid black; border-bottom: 2px solid black; background-color: #f8f8f8;">Prix (€)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% @training_data.each_slice(5) do |group| %>
+            <tr>
+                <% group.each do |d| %>
+                <td style="border-right: 2px solid black; border-bottom: 1px solid black;"><%= d.taille %></td>
+                <td style="border-right: 2px solid black; border-bottom: 1px solid black; background-color: #f8f8f8;"><%= number_with_delimiter(d.prix.to_i, delimiter: " ") %></td>
+                <% end %>
+                <!-- Remplir les colonnes vides si le groupe n'a pas 5 éléments -->
+                <% (5 - group.size).times do %>
+                <td style="border-right: 2px solid black; border-bottom: 1px solid black;"></td>
+                <td style="border-right: 2px solid black; border-bottom: 1px solid black; background-color: #f8f8f8;"></td>
+                <% end %>
+            </tr>
+            <% end %>
+        </tbody>
+        </table>
+
+
+
+
+        <% else %>
+        <p style="color: #666;">Aucune donnée enregistrée pour le moment.</p>
+        <% end %>
+
+    </div> 
+
