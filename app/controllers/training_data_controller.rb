@@ -7,7 +7,9 @@ class TrainingDataController < ApplicationController
   def create
     @training_datum = TrainingDatum.new(training_data_params)
     if @training_datum.save
-      redirect_to root_path, notice: "Nouvelle donnée réelle ajoutée !"
+       flash.now[:notice] = "Nouvelle donnée réelle ajoutée !"
+      @training_data = TrainingDatum.all
+      render :new, status: :ok
     else
       @training_data = TrainingDatum.all
       render :new, status: :unprocessable_entity
@@ -17,7 +19,7 @@ class TrainingDataController < ApplicationController
   private
 
   def training_data_params
-    params.require(:training_datum).permit(:taille, :prix)
+    params.permit(:taille, :prix)
   end
 end
 

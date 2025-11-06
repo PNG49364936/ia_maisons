@@ -10,6 +10,12 @@ Rails.application.routes.draw do
 
 
   resources :training_data, only: [:new, :create]
+resources :predictions do
+  collection do
+    get :predict
+     post :predict 
+  end
+end
 
 end
 

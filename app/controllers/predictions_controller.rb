@@ -11,7 +11,7 @@ class PredictionsController < ApplicationController
 
     # Prépare les données pour le graphe
     @graph_data = @training_data.map { |d| [d.taille, d.prix] }.to_h
-    @graph_data = {50 => 100_000, 60 => 120_000, 70 => 150_000} if @graph_data.empty?
+    @graph_data = {50 => 349_000} if @graph_data.empty?
 
     # Si aucune taille saisie → on affiche la vue sans calculer
     if params[:taille].blank?
@@ -23,9 +23,10 @@ class PredictionsController < ApplicationController
     @taille = params[:taille].to_f
 
     # Données d’entraînement pour le modèle
-    if @training_data.empty?
-      x = Numo::DFloat[[50]]
-      y = Numo::DFloat[341_000]
+    if @training_data.count < 2
+  @resultat = "⚠️ Il faut au moins 2 appartements enregistrés pour entraîner le modèle."
+  return render :predict
+
     else
       x = Numo::DFloat[*@training_data.map { |d| [d.taille] }]
       y = Numo::DFloat[*@training_data.map(&:prix)]
