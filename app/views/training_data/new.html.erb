@@ -1,6 +1,8 @@
     <body class="background-color">
+          <%= link_to "Home", root_path, class: "btn btn-primary" %>
         <div class="container mt-5" id="mycontainer">
-    
+       
+   
             <div class="data">   
                 <h3>📈 Ajouter une donnée réelle :</h3>
                 <p>Entrez une taille et le prix réel observé pour améliorer le modèle :</p>
@@ -56,10 +58,6 @@
                     <% end %>
                 </tbody>
                 </table>
-
-
-
-
                 <% else %>
                 <p style="color: #666;">Aucune donnée enregistrée pour le moment.</p>
                 <% end %>

@@ -4,72 +4,113 @@
   <p>params : <%= params.inspect %></p>
 </div>
 
-<h1>💡 Estimation du prix d'une maison</h1>
+  <div class="container mt-5" id="mycontainer">
+    <div>
+        <%= link_to "Home", root_path, class: "btn btn-primary" %>
+    </div>
+    <hr>
+    <h1>💡 Estimation du prix d'une maison</h1>
 
-<%= form_with url: predict_predictions_path, method: :post do |f| %>
+    <%= form_with url: predict_predictions_path, method: :post do |f| %>
 
-  <div>
-    <%= f.label :taille, "Taille de la maison (m²) :" %>
-    <%= f.number_field :taille, step: 1, required: true %>
+      <div>
+        <%= f.label :taille, "Taille de la maison (m²) :" %>
+        <%= f.number_field :taille, step: 1, required: true %>
+      </div>
+
+      <div class="mt-3">
+        <label class="form-label">Type de bien :</label>
+        <div class="form-check form-check-inline">
+          <%= f.radio_button :type_bien, "ancien", checked: true, class: "form-check-input", id: "type_ancien" %>
+          <%= f.label :type_ancien, "Ancien", class: "form-check-label" %>
+        </div>
+        <div class="form-check form-check-inline">
+          <%= f.radio_button :type_bien, "neuf", class: "form-check-input", id: "type_neuf" %>
+          <%= f.label :type_neuf, "Neuf", class: "form-check-label" %>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <label class="form-label">État du bien :</label>
+        <div class="form-check form-check-inline">
+          <%= f.radio_button :etat_bien, "a_renover", checked: true, class: "form-check-input", id: "etat_a_renover" %>
+          <%= f.label :etat_a_renover, "A rénover", class: "form-check-label" %>
+        </div>
+        <div class="form-check form-check-inline">
+          <%= f.radio_button :etat_bien, "bon_etat", class: "form-check-input", id: "etat_bon_etat" %>
+          <%= f.label :etat_bon_etat, "Bon état", class: "form-check-label" %>
+        </div>
+        <div class="form-check form-check-inline">
+          <%= f.radio_button :etat_bien, "totalement_renove", class: "form-check-input", id: "etat_totalement_renove" %>
+          <%= f.label :etat_totalement_renove, "Totalement rénové", class: "form-check-label" %>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <%= f.submit "Prédire le prix" %>
+      </div>
+    <% end %>
+
+    <% if @resultat.present? %>
+      <% if @resultat.include?("⚠️") %>
+        <div style="color: red; margin-top: 10px;"><%= @resultat %></div>
+      <% else %>
+        <h2 style="color: green; margin-top: 20px;"><%= @resultat %></h2>
+      <% end %>
+    <% end %>
+
+    <hr>
+
+
+
+    <hr>
+
+
+
+    <hr>
+    <pre><%= @graph_data.inspect %></pre>
+
+    <hr>
+
+    <h3>📉 Graphique : Données d’entraînement + Prédiction</h3>
+
+    <pre>
+    DEBUG - @taille: <%= @taille.inspect %>
+    DEBUG - @prix_prevu: <%= @prix_prevu.inspect %>
+    </pre>
+
+    <% if @graph_data.present? %>
+      <%= line_chart [
+            { name: "Données réelles", data: @graph_data, color: "#4CAF50" },
+            # 🔴 Afficher le point de prédiction s’il existe
+            (@taille && @prix_prevu) ? { 
+              name: "Prédiction", 
+              data: { @taille => @prix_prevu },
+              color: "#FF0000",
+              points: true
+            } : nil
+          ].compact,
+          xtitle: "Taille (m²)",
+          ytitle: "Prix (€)"
+      %>
+    <% end %>
+
+    <% if @prix_prevu %>
+      <p style="margin-top: 15px; font-size: 18px;">
+        💰 <b>Prix prédit :</b>
+        <%= number_with_delimiter(@prix_prevu.round(0).to_i, delimiter: " ") %> €
+        pour une maison de <%= @taille.to_i %> m²
+        <% if @type_bien == "neuf" %>
+          <span class="badge bg-success">Neuf +10%</span>
+        <% else %>
+          <span class="badge bg-secondary">Ancien</span>
+        <% end %>
+      </p>
+    <% else %>
+      <p style="color: #888;">(Aucune prédiction encore calculée)</p>
+    <% end %>
+
   </div>
-  <div style="margin-top: 10px;">
-    <%= f.submit "Prédire le prix" %>
-  </div>
-<% end %>
-
-<% if @resultat.present? %>
-  <% if @resultat.include?("⚠️") %>
-    <div style="color: red; margin-top: 10px;"><%= @resultat %></div>
-  <% else %>
-    <h2 style="color: green; margin-top: 20px;"><%= @resultat %></h2>
-  <% end %>
-<% end %>
-
-<hr>
-
-
-
-<hr>
-
-
-
-<hr>
-<pre><%= @graph_data.inspect %></pre>
-
-<hr>
-
-<h3>📉 Graphique : Données d’entraînement + Prédiction</h3>
-
-<pre>
-DEBUG - @taille: <%= @taille.inspect %>
-DEBUG - @prix_prevu: <%= @prix_prevu.inspect %>
-</pre>
-
-<% if @graph_data.present? %>
-  <%= line_chart [
-        { name: "Données réelles", data: @graph_data, color: "#4CAF50" },
-        # 🔴 Afficher le point de prédiction s’il existe
-        (@taille && @prix_prevu) ? { 
-          name: "Prédiction", 
-          data: { @taille => @prix_prevu },
-          color: "#FF0000",
-          points: true
-        } : nil
-      ].compact,
-      xtitle: "Taille (m²)",
-      ytitle: "Prix (€)"
-  %>
-<% end %>
-
-<% if @prix_prevu %>
-  <p style="margin-top: 15px; font-size: 18px;">
-    💰 <b>Prix prédit :</b>
-    <%= number_with_delimiter(@prix_prevu.round(0).to_i, delimiter: " ") %> €
-    pour une maison de <%= @taille.to_i %> m²
-  </p>
-<% else %>
-  <p style="color: #888;">(Aucune prédiction encore calculée)</p>
-<% end %>
 
 
 
